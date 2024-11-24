@@ -13,12 +13,11 @@ export class PacienteService {
     private readonly diagnosticoRepository: Repository<DiagnosticoEntity>,
   ) {}
 
-  async create(paciente: Partial<PacienteEntity>): Promise<PacienteEntity> {
+  async create(paciente: PacienteEntity): Promise<PacienteEntity> {
     if (!paciente.nombre || paciente.nombre.length < 3) {
       throw new BadRequestException('El nombre del paciente debe tener al menos 3 caracteres');
     }
-    const nuevoPaciente = this.pacienteRepository.create(paciente);
-    return await this.pacienteRepository.save(nuevoPaciente);
+    return await this.pacienteRepository.save(paciente);
   }
 
   async findOne(id: string): Promise<PacienteEntity> {

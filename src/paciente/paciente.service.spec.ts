@@ -7,6 +7,7 @@ import { PacienteEntity } from './paciente.entity';
 import { TypeOrmTestingConfig } from '../shared/testing-utils/typeorm-testing-config';
 import { faker } from '@faker-js/faker';
 import { BadRequestException } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
 
 describe('PacienteService', () => {
   let service: PacienteService;
@@ -29,8 +30,8 @@ describe('PacienteService', () => {
     pacientesList = [];
     for (let i = 0; i < 5; i++) {
       const paciente: PacienteEntity = await repository.save({
-        nombre: faker.name.firstName(),
-        genero: faker.name.gender(),
+        nombre: faker.person.firstName(),
+        genero: faker.person.sex(), 
       });
       pacientesList.push(paciente);
     }
@@ -43,9 +44,9 @@ describe('PacienteService', () => {
   it('create should return a new paciente', async () => {
     // Arrange
     const paciente: PacienteEntity = {
-      id: '',
-      nombre: faker.name.firstName(),
-      genero: faker.name.gender(),
+      id: uuid(),
+      nombre: faker.person.firstName(),
+      genero: faker.person.sex(),
       medicos: [],
       diagnosticos: [],
     };

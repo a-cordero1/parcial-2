@@ -1,34 +1,29 @@
 /* eslint-disable prettier/prettier */
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PetEntity } from '../../pet/pet.entity';
-import { UserEntity } from '../../user/user.entity';
-import { ProductEntity } from '../../product/product.entity';
-import { HomeEntity } from '../../home/home.entity';
-import { FoundationEntity } from '../../foundation/foundation.entity';
-import { PurchaseEntity } from '../../purchase/purchase.entity';
+import { MedicoEntity } from '../../medico/medico.entity';
+import { PacienteEntity } from '../../paciente/paciente.entity';
+import { DiagnosticoEntity } from '../../diagnostico/diagnostico.entity';
 
 export const TypeOrmTestingConfig = () => [
   TypeOrmModule.forRoot({
-    type: 'sqlite',
-    database: ':memory:',
-    dropSchema: true,
+    type: 'postgres', // Cambiamos de SQLite a PostgreSQL
+    host: 'localhost', // Host de PostgreSQL
+    port: 5432, // Puerto de PostgreSQL
+    username: 'postgres', // Usuario configurado para PostgreSQL
+    password: '1234', // Contraseña configurada
+    database: 'medico', // Nombre de la base de datos
     entities: [
-      PetEntity,
-      UserEntity,
-      ProductEntity,
-      HomeEntity,
-      FoundationEntity,
-      PurchaseEntity,
+      MedicoEntity,
+      PacienteEntity,
+      DiagnosticoEntity,
     ],
-    synchronize: true,
-    keepConnectionAlive: true,
+    dropSchema: true, // Limpia el esquema en cada ejecución para pruebas
+    synchronize: true, // Crea las tablas automáticamente en la base de datos
+    keepConnectionAlive: true, // Mantiene la conexión viva entre pruebas
   }),
   TypeOrmModule.forFeature([
-    PetEntity,
-    UserEntity,
-    ProductEntity,
-    HomeEntity,
-    FoundationEntity,
-    PurchaseEntity,
+    MedicoEntity,
+    PacienteEntity,
+    DiagnosticoEntity,
   ]),
 ];
