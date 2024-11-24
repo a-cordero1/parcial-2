@@ -21,7 +21,10 @@ export class PacienteService {
   }
 
   async findOne(id: string): Promise<PacienteEntity> {
-    const paciente = await this.pacienteRepository.findOne({ where: { id } });
+    const paciente = await this.pacienteRepository.findOne({
+      where: { id },
+      relations: ['diagnosticos'],
+    });
     if (!paciente) {
       throw new NotFoundException(`El paciente con id ${id} no existe`);
     }
@@ -29,17 +32,23 @@ export class PacienteService {
   }
 
   async findAll(): Promise<PacienteEntity[]> {
-    return await this.pacienteRepository.find();
+    return await this.pacienteRepository.find({ relations: ['diagnosticos'] });
   }
 
   async delete(id: string): Promise<void> {
-    const paciente: PacienteEntity = await this.pacienteRepository.findOne({ where: { id } });
-    const diagnosticos = await this.diagnosticoRepository.find({
-      where: { pacientes: { id: paciente.id } },
+    const paciente = await this.pacienteRepository.findOne({
+      where: { id },
+      relations: ['diagnosticos'],
     });
-    if (diagnosticos.length > 0) {
+
+    if (!paciente) {
+      throw new NotFoundException('El paciente con id dado no existe');
+    }
+
+    if (paciente.diagnosticos.length > 0) {
       throw new BadRequestException('No se puede eliminar un paciente que tiene diagnósticos asociados');
     }
-    await this.pacienteRepository.delete(id);
+
+    await this.pacienteRepository.delete(paciente.id);
   }
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MedicoEntity } from './medico.entity';
 import { PacienteEntity } from '../paciente/paciente.entity';
+import { BusinessLogicException, BusinessError } from '../shared/errors/business-errors';
 
 @Injectable()
 export class MedicoService {
@@ -34,14 +35,22 @@ export class MedicoService {
   }
 
   async delete(id: string): Promise<void> {
-    const medico: MedicoEntity = await this.medicoRepository.findOne({where: {id}});
-    const pacientes = await this.pacienteRepository.find({
-      where: { medicos: { id: medico.id } },
-      relations: ['medicos'],
+    const medico: MedicoEntity = await this.medicoRepository.findOne({
+      where: { id },
+      relations: ['pacientes'],
     });
-    if (pacientes.length > 0) {
-      throw new BadRequestException('No se puede eliminar un médico que tiene pacientes asignados');
+  
+    if (!medico) {
+      throw new BusinessLogicException('El médico con el id dado no existe', BusinessError.NOT_FOUND);
     }
-    await this.medicoRepository.delete(id);
-  }
+  
+    if (medico.pacientes && medico.pacientes.length > 0) {
+      throw new BusinessLogicException(
+        'No se puede eliminar un médico que tiene pacientes asociados',
+        BusinessError.PRECONDITION_FAILED,
+      );
+    }
+  
+    await this.medicoRepository.remove(medico);
+  }  
 }
