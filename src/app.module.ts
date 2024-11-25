@@ -12,25 +12,20 @@ import { PacienteMedicoModule } from './paciente-medico/paciente-medico.module';
 
 @Module({
   imports: [
-    MedicoModule,
-    PacienteModule,
-    DiagnosticoModule,
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '1234',
-      database: 'medico',
+      type: 'sqlite',
+      database: ':memory:', // Usa ':memory:' para pruebas en memoria o especifica un archivo para almacenamiento persistente.
       entities: [
         MedicoEntity,
         PacienteEntity,
         DiagnosticoEntity,
       ],
-      dropSchema: true,
-      synchronize: true,
-      keepConnectionAlive: true,
+      synchronize: true, // Automáticamente crea las tablas en SQLite.
+      logging: false,    // Opcional: desactiva el logueo en consola.
     }),
+    MedicoModule,
+    PacienteModule,
+    DiagnosticoModule,
     PacienteMedicoModule,
   ],
   controllers: [AppController],
